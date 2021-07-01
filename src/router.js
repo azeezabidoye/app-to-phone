@@ -1,6 +1,11 @@
 const Router = require('express').Router;
 
-const {tokenGenerator, voiceResponse} = require('./handler');
+const {
+  tokenGenerator,
+  voiceResponse,sendSMS,
+  callForwarder,
+  callReceiver,
+} = require("./handler");
 
 const router = new Router();
 
@@ -12,9 +17,23 @@ router.get('/token', (req, res) => {
   res.send(tokenGenerator());
 });
 
+router.post('/sms', (req, res) => {
+  res.set('Content-Type', 'text/xml');
+  res.send(sendSMS(req.body.text, req.body.To));
+});
+
 router.post('/voice', (req, res) => {
   res.set('Content-Type', 'text/xml');
   res.send(voiceResponse(req.body.To));
+});
+
+router.post('/call', (req, res) => {
+  res.set('Content-Type', 'text/xml');
+  res.send(callForwarder(req.body.To));
+});
+
+router.post('/voice', (req, res) => {
+  res.send(callReceiver(req, res));
 });
 
 module.exports = router;
